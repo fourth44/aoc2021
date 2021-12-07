@@ -10,16 +10,16 @@ package adventofcode.y2021
   val horzVert: Seq[Segment[Int]] = ventLines.filter(_.isHorzVert)
 
   def intersections(ventLines: Seq[Segment[Int]]): Map[Vect2D[Int], Seq[Segment[Int]]] = {
-    val intersectionListWithLines: Seq[(Vect2D[Int], Seq[Segment[Int]])] = for {
-      i1 <- ventLines.indices
-      i2 <- i1 + 1 until ventLines.size // 'triangle' of all unique combinations
-      l1 = ventLines(i1)
-      l2 = ventLines(i2)
-      // both true intersections of non-parallel lines as well as integral points on overlapping lines
-      i <- l1.intersectSegment(l2).toSeq ++ l1.overlap(l2).toSeq.flatMap(_.integralPoints)
-    } yield {
-      i -> Seq(l1, l2)
-    }
+    val intersectionListWithLines: Seq[(Vect2D[Int], Seq[Segment[Int]])] =
+      for
+        i <- ventLines.indices
+        j <- i + 1 until ventLines.size // 'triangle' of all unique combinations
+        (l1, l2) = (ventLines(i), ventLines(j))
+        intersections = l1.intersectSegment(l2).toSeq
+        overlap = l1.overlap(l2).toSeq.flatMap(_.integralPoints)
+        i <- intersections ++ overlap
+      yield
+        i -> Seq(l1, l2)
     intersectionListWithLines.groupMapReduce(_._1)(_._2)((a, b) => (a ++ b).distinct) // combine entries on same points
   }
 

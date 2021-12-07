@@ -10,9 +10,11 @@ package adventofcode.y2021
   val crabs0 = crabs0Real // toggle
 
   // there is probably a smoarter way: median/average etc
-  val resultA = (crabs0.min to crabs0.max).map { pos =>
-    pos -> crabs0.map(c => math.abs(pos - c)).sum
-  }.minBy(_._2)
+  val resultA = (crabs0.min to crabs0.max)
+    .map { pos =>
+      pos -> crabs0.map(c => math.abs(pos - c)).sum
+    }
+    .minBy(_._2)
 
   println(resultA)
 

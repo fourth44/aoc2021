@@ -1,51 +1,56 @@
 package adventofcode.y2021
 
-import scala.math.Numeric.Implicits.infixNumericOps
-import scala.math.Ordering.Implicits.infixOrderingOps
-import adventofcode.y2021.Vect2D
+import scala.math.Numeric.Implicits.*
+import scala.math.Ordering.Implicits.*
+import math.Integral.Implicits.*
 
 // can be used as true segment between both points (inclusive) or as infinite line through both points
 case class Segment[A: Numeric](a: Vect2D[A], b: Vect2D[A])
 
-extension [N: Numeric: CanDiv](s: Segment[N]) {
-  def isHorzVert: Boolean = s.a.y == s.b.y || s.a.x == s.b.x
-  def minX: N = s.a.x min s.b.x
-  def maxX: N = s.a.x max s.b.x
-  def minY: N = s.a.y min s.b.y
-  def maxY: N = s.a.y max s.b.y
+extension [N](s: Segment[N])(using n: Numeric[N]) {
+  def zero = n.zero
+
+  def isHorzVert: Boolean = A == zero || B == zero
+
+  def minBy(by: Vect2D[N] => N) = by(s.a) min by(s.b)
+  def maxBy(by: Vect2D[N] => N) = by(s.a) max by(s.b)
 
   // see https://www.topcoder.com/thrive/articles/Geometry%20Concepts%20part%202:%20%20Line%20Intersection%20and%20its%20Applications#LineLineIntersection
   // also works for vertical lines
   // find form Ax+By=C
-  def A: N = s.b.y - s.a.y
-  def B: N = s.a.x - s.b.x
+  def A: N = s.b.y - s.a.y  // delta Y
+  def B: N = s.a.x - s.b.x  // - delta X
   def C: N = A * s.a.x + B * s.a.y
   def det(s2: Segment[N]): N = s.A * s2.B - s2.A * s.B // 0 if parallel
 
   def onLineSegment(v: Vect2D[N]): Boolean =
-    v.x >= minX && v.x <= maxX && v.y >= minY && v.y <= maxY && s.onLine(v)
+    v.x >= minBy(_.x) && v.x <= maxBy(_.x) && v.y >= minBy(_.y) && v.y <= maxBy(_.y) && s.onLine(v)
 
   def onLine(v: Vect2D[N]): Boolean =  // doesn't take line segment into account, only whole implied line
     val s1 = Segment(s.a, v) // create 2 lines: segment start -> v and v -> segment end
     val s2 = Segment(v, s.b)
-    s1.det(s2) == 0 // if both those lines are parallel, v must be on the line implied by s (but not per se on line segment s!)
+    s1.det(s2) == zero // if both those lines are parallel, v must be on the line implied by s (but not per se on line segment s!)
 
-  def intersectLine(s2: Segment[N]): Option[Vect2D[N]] =
+  inline def intersectLine(s2: Segment[N]): Option[Vect2D[N]] =
+    val div: (N, N) => N = scala.compiletime.summonFrom {
+      case i: Integral[N] => i.quot
+      case f: Fractional[N] => f.div
+    }
     val D = s.det(s2)
-    Option.unless(D == 0) {
+    Option.unless(D == zero) {
       Vect2D[N](
-        (s2.B * s.C - s.B * s2.C) / D,
-        (s.A * s2.C - s2.A * s.C) / D
+        div(s2.B * s.C - s.B * s2.C, D),
+        div(s.A * s2.C - s2.A * s.C, D)
       )
     }
 
-  def intersectSegment(s2: Segment[N]): Option[Vect2D[N]] =
+  inline def intersectSegment(s2: Segment[N]): Option[Vect2D[N]] =
     intersectLine(s2).filter { i =>
       s.onLineSegment(i) && s2.onLineSegment(i)
     }
 
   def overlap(s2: Segment[N]): Option[Segment[N]] =
-    Option.when(s.det(s2) == 0) {                                 // if parallel
+    Option.when(s.det(s2) == zero) {                                 // if parallel
       (s.toSeq ++ s2.toSeq)                                       // from all the points of both lines
         .filter { v => Seq(s, s2).forall(_.onLineSegment(v)) }    // keep those which are on both lines
         .distinct
@@ -56,17 +61,21 @@ extension [N: Numeric: CanDiv](s: Segment[N]) {
     }
 
   def toSeq: Seq[Vect2D[N]] = Seq(s.a, s.b)
+  def swapAxis: Segment[N] = Segment(s.a.swap, s.b.swap)
 }
 
 extension (s: Segment[Int]) {
-  // suboptimal: tries every point in the bounding box!
   def integralPoints: Seq[Vect2D[Int]] =
-    (for {
-      x <- s.minX to s.maxX
-      y <- s.minY to s.maxY
+    val s0 = s.B match
+      case 0 => s.swapAxis                // vertical: swap axis
+      case _ => s
+    for
+      x <- s0.minBy(_.x) to s0.maxBy(_.x) // all points on x axis
+      (y, mod) = (s0.C - s0.A*x) /% s0.B  // compute y by inverting Ax+By=C into y=(C-Ax)/B
+      if mod == 0                         // only if y is also integral
       v = Vect2D(x, y)
-      if s.onLineSegment(v)
-    } yield {
-      v
-    }).toSeq
+    yield
+      s.B match
+        case 0 => v.swap                  // swap results back if vertical
+        case _ => v
 }
