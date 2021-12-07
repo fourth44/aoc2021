@@ -9,7 +9,7 @@ implicit class RegexContext(sc: StringContext):
 object AsInt:
   def unapply(s: String): Option[Int] = s.toIntOption
 
-// typeclass Numeric doesn't handle division.
+// typeclass for division which Numeric doesn't handle.
 trait CanDiv[A]:
   def div(a: A, B: A): A
   extension (a: A) def / (b: A) = div(a, b)

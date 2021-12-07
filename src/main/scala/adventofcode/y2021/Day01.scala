@@ -7,9 +7,22 @@ def Day01 = {
 
   val ints = lines.filterNot(_.isBlank).map(_.toInt)
 
-  val resultA = ints.sliding(2).count { case Seq(a, b) => a < b }
+  val resultA =
+    ints
+      .sliding(2)
+      .count { case Seq(a, b) => a < b }    // 'safe' to match only 2-sized Seq here since we know the input is long enough
+
   println(resultA)
 
-  val resultB = ints.sliding(3).map(_.sum).sliding(2).count { case Seq(a, b) => a < b }
+  val resultB = ints
+    .sliding(3)
+    .map(_.sum)
+    .sliding(2)                             // same as A from here
+    .count { case Seq(a, b) => a < b }
+
   println(resultB)
+
+  /**
+   *
+   */
 }

@@ -2,6 +2,8 @@ package adventofcode.y2021
 
 import scala.util.chaining.*
 
+def bin2dec(binary: String): Int = Integer.parseInt(binary, 2)
+
 @main
 def Day03 = {
   val input = Option(getClass.getResourceAsStream("/adventofcode/y2021/day03a.txt")).getOrElse(sys.error("Resource not found"))
@@ -21,12 +23,13 @@ def Day03 = {
 
   val transposed = lines.transpose
 
-  val histogramByCol = transposed.map(_.groupBy(identity).map { case (k, v) => (v.size, k)})
+  val histogramByCol: Seq[Map[Int, Char]] = transposed.map(_.groupBy(identity).map { case (k, v) => (v.size, k) })
 
   val gamma = histogramByCol.map(_.maxBy(_._1)._2).mkString
   val epsilon = histogramByCol.map(_.minBy(_._1)._2).mkString
 
-  println(Integer.parseInt(gamma, 2) * Integer.parseInt(epsilon, 2))
+  // result A
+  println(bin2dec(gamma) * bin2dec(epsilon))
 
   // 2nd part
 
@@ -37,6 +40,7 @@ def Day03 = {
   val Seq(oxygen) = compute(_.last)
   val Seq(co2) = compute(_.head)
 
-  println(Integer.parseInt(oxygen, 2) * Integer.parseInt(co2, 2))
+  // result B
+  println(bin2dec(oxygen) * bin2dec(co2))
 
 }

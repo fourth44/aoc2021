@@ -34,6 +34,6 @@ package adventofcode.y2021
 
   val states2 = LazyList.iterate(histogram0)(step2)
 
-  println(states2.drop(80).head.values.sum) // OK
+  println(states2.drop(80).head.values.sum)
   println(states2.drop(256).head.values.sum)
 }

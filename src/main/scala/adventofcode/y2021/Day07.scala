@@ -9,8 +9,6 @@ package adventofcode.y2021
 
   val crabs0 = crabs0Real // toggle
 
-  println(crabs0)
-
   // there is probably a smoarter way: median/average etc
   val resultA = (crabs0.min to crabs0.max).map { pos =>
     pos -> crabs0.map(c => math.abs(pos - c)).sum
@@ -21,7 +19,7 @@ package adventofcode.y2021
   val resultB = (crabs0.min to crabs0.max).map { pos =>
     pos -> crabs0.map { c =>
       val d = math.abs(pos - c)
-      (d * (d + 1)) / 2
+      (d * (d + 1)) / 2  // accumlative fuel consumption is distance^2/2, i.e. surface of triangle (integral of fuel consumption over time graph)
     }.sum
   }.minBy(_._2)
 

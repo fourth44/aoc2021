@@ -13,18 +13,19 @@ def Day02 = {
   
   val dirsAmounts: Seq[(Dir, Int)] = lines.map { case r"(\w+)${dir} (\d+)${amount}" => Dir.valueOf(dir) -> amount.toInt }
 
-  val Vect2D(endX, endY) = dirsAmounts.foldLeft(Vect2D(0, 0)) { case (p, (dir, amnt)) => p + dir.vect * amnt }
+  val Vect2D(endX, endY) = dirsAmounts.foldLeft(Vect2D(0, 0)) { case (pos, (dir, amnt)) => pos + dir.vect * amnt }
 
+  // result A
   println(endX * endY)
 
-  val (Vect2D(endXb, endYb), _) = dirsAmounts.foldLeft((Vect2D(0, 0), 0)) { case ((p, a), (dir, amnt)) =>
-    dir match {
-      case Dir.up => (p, a - amnt)
-      case Dir.forward => (p + dir.vect * amnt + Dir.down.vect * a * amnt, a)
-      case Dir.down => (p, a + amnt)
-    }
+  val (Vect2D(endXb, endYb), _) = dirsAmounts.foldLeft((Vect2D(0, 0), 0)) { case ((pos, angle), (dir, amnt)) =>
+    dir match
+      case Dir.up => (pos, angle - amnt)
+      case Dir.forward => (pos + dir.vect * amnt + Dir.down.vect * angle * amnt, angle)
+      case Dir.down => (pos, angle + amnt)
   }
 
+  // result B
   println(endXb * endYb)
 
 }

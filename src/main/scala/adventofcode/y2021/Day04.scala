@@ -20,7 +20,8 @@ package adventofcode.y2021
 
   def score(board: Board, num: Int): Int = board.flatten.collect { case (i, false) => i }.sum * num
   
-  val timeline = numbers zip numbers.scanLeft(boards) { (brds, num) =>  brds.map(mark(_, num)) }.drop(1) // drop initial state
+  val timeline: Seq[(Int, Seq[Board])] =
+    numbers zip numbers.scanLeft(boards) { (brds, num) =>  brds.map(mark(_, num)) }.drop(1) // drop initial state
 
   val resultA = timeline.flatMap { case (num, boards) =>
     boards.find(boardDone).map(score(_, num))

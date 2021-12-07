@@ -45,15 +45,15 @@ extension [N: Numeric: CanDiv](s: Segment[N]) {
     }
 
   def overlap(s2: Segment[N]): Option[Segment[N]] =
-    Option.when(s.det(s2) == 0) {
-      (s.toSeq ++ s2.toSeq).filter { v =>
-        Seq(s, s2).forall(_.onLineSegment(v))
-      }.distinct.match {
-        case Seq(a) => Some(Segment(a, a))
-        case Seq(a, b) => Some(Segment(a, b))
-        case other => None
-      }
-    }.flatten
+    Option.when(s.det(s2) == 0) {                                 // if parallel
+      (s.toSeq ++ s2.toSeq)                                       // from all the points of both lines
+        .filter { v => Seq(s, s2).forall(_.onLineSegment(v)) }    // keep those which are on both lines
+        .distinct
+    }.flatMap {
+      case Seq(a) => Some(Segment(a, a))                          // lines extend each other (1 point overlap)
+      case Seq(a, b) => Some(Segment(a, b))                       // other cases of overlap
+      case other => None
+    }
 
   def toSeq: Seq[Vect2D[N]] = Seq(s.a, s.b)
 }
