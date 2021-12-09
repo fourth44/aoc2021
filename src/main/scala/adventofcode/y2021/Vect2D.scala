@@ -8,3 +8,4 @@ case class Vect2D[A: Numeric](x: A, y: A):
   def + (other: Vect2D[A]): Vect2D[A] = Vect2D(x + other.x, y + other.y)
   def * (i: A): Vect2D[A] = Vect2D(x * i, y * i)
   def swap: Vect2D[A] = Vect2D(y, x)
+  def seq: Seq[A] = Seq(x, y)

@@ -7,6 +7,7 @@ import math.Integral.Implicits.*
 // can be used as true segment between both points (inclusive) or as infinite line through both points
 case class Segment[A: Numeric](a: Vect2D[A], b: Vect2D[A])
 
+// 'extension' to keep the case class clean
 extension [N](s: Segment[N])(using n: Numeric[N]) {
   def zero = n.zero
 
@@ -31,7 +32,7 @@ extension [N](s: Segment[N])(using n: Numeric[N]) {
     val s2 = Segment(v, s.b)
     s1.det(s2) == zero // if both those lines are parallel, v must be on the line implied by s (but not per se on line segment s!)
 
-  inline def intersectLine(s2: Segment[N]): Option[Vect2D[N]] =
+  inline def intersectLine(s2: Segment[N]): Option[Vect2D[N]] = // None if parallel
     val div: (N, N) => N = scala.compiletime.summonFrom {
       case i: Integral[N] => i.quot
       case f: Fractional[N] => f.div

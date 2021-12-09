@@ -2,9 +2,7 @@ package adventofcode.y2021
 
 
 @main
-def Day02 = {
-  val input = Option(getClass.getResourceAsStream("/adventofcode/y2021/day02a.txt")).getOrElse(sys.error("Resource not found"))
-  val lines = scala.io.Source.fromInputStream(input).getLines().toSeq
+def Day02 = withResource("day02a.txt"){
 
   enum Dir(val vect: Vect2D[Int]):
     case forward extends Dir(Vect2D(1, 0))

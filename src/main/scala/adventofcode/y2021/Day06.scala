@@ -1,10 +1,8 @@
 package adventofcode.y2021
 
-@main def Day06 = {
-  val input = Option(getClass.getResourceAsStream("/adventofcode/y2021/day06a.txt")).getOrElse(sys.error("Resource not found"))
-  val lines = scala.io.Source.fromInputStream(input).getLines().toSeq
+@main def Day06 = withResource("day06a.txt"){
 
-  val fish0 = lines.head.split(',').toSeq.map(_.toInt)
+  val fish0 = intsFirstLine()
   val testFish = Seq(3,4,3,1,2)
 
   // 1st approach

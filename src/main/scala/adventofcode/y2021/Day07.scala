@@ -1,15 +1,13 @@
 package adventofcode.y2021
 
-@main def Day07 = {
-  val input = Option(getClass.getResourceAsStream("/adventofcode/y2021/day07a.txt")).getOrElse(sys.error("Resource not found"))
-  val lines = scala.io.Source.fromInputStream(input).getLines().toSeq
+@main def Day07 = withResource("day07a.txt"){
 
-  val crabs0Real = lines.head.split(',').toSeq.map(_.toInt)
+  val crabs0Real = intsFirstLine()
   val crabs0Test = Seq(16,1,2,0,4,2,7,1,2,14)
 
   val crabs0 = crabs0Real // toggle
 
-  // there is probably a smoarter way: median/average etc
+  // there is probably a smarter way: median/average etc
   val resultA = (crabs0.min to crabs0.max)
     .map { pos =>
       pos -> crabs0.map(c => math.abs(pos - c)).sum

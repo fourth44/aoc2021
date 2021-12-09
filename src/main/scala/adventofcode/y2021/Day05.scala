@@ -1,8 +1,6 @@
 package adventofcode.y2021
 
-@main def Day05(): Unit = {
-  val input = Option(getClass.getResourceAsStream("/adventofcode/y2021/day05a.txt")).getOrElse(sys.error("Resource not found"))
-  val lines = scala.io.Source.fromInputStream(input).getLines().toSeq
+@main def Day05(): Unit = withResource("day05a.txt"){
 
   val ventLines: Seq[Segment[Int]] =
     lines.map { case r"(\d+)${AsInt(x1)},(\d+)${AsInt(y1)} \-\> (\d+)${AsInt(x2)},(\d+)${AsInt(y2)}" => Segment(Vect2D(x1, y1), Vect2D(x2, y2))}

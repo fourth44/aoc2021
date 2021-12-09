@@ -1,14 +1,11 @@
 package adventofcode.y2021
 
-@main def Day04(): Unit =  {
+@main def Day04(): Unit =  withResource("day04a.txt"){
 
   type Board = Seq[Seq[(Int, Boolean)]]
 
-  val input = Option(getClass.getResourceAsStream("/adventofcode/y2021/day04a.txt")).getOrElse(sys.error("Resource not found"))
-  val lines = scala.io.Source.fromInputStream(input).getLines().toSeq
-
-  val numbers = lines(0).split(',').toSeq.map(_.toInt)
-  val boards: Seq[Board] = lines.drop(2).grouped(6).map(_.take(5).map(_.grouped(3).take(5).toSeq.map(_.trim.toInt -> false))).toSeq
+  val numbers = intsFirstLine()
+  val boards: Seq[Board] = lines().drop(2).grouped(6).map(_.take(5).map(_.grouped(3).take(5).toSeq.map(_.trim.toInt -> false))).toSeq
 
   def boardDone(board: Board): Boolean = Seq(board, board.transpose).exists(_.exists(_.forall(_._2)))
 
