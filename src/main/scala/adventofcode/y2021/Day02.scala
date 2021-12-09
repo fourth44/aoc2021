@@ -9,7 +9,7 @@ def Day02 = withResource("day02a.txt"){
     case down extends Dir(Vect2D(0, 1))
     case up extends Dir(Vect2D(0, -1))
   
-  val dirsAmounts: Seq[(Dir, Int)] = lines.map { case r"(\w+)${dir} (\d+)${amount}" => Dir.valueOf(dir) -> amount.toInt }
+  val dirsAmounts: Seq[(Dir, Int)] = lines().map { case r"(\w+)${dir} (\d+)${amount}" => Dir.valueOf(dir) -> amount.toInt }
 
   val Vect2D(endX, endY) = dirsAmounts.foldLeft(Vect2D(0, 0)) { case (pos, (dir, amnt)) => pos + dir.vect * amnt }
 
