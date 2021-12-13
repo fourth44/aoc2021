@@ -18,7 +18,6 @@ extension [S](s: S)
       case Left(s2) => s2.unfold(f)
       case Right(a) => a
 
-
 // helpers to reduce file reading boilerplate (which already hardly existed anyway...)
 
 opaque type Source = () => scala.io.Source
