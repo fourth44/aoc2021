@@ -10,7 +10,7 @@ package adventofcode.y2021
   val pairs = Seq('(' -> ')', '[' -> ']', '{' -> '}', '<' -> '>')
 
   def isOpener(c: Char) = pairs.map(_._1).contains(c)
-  object closer:
+  object Closer:
     def unapply(c: Char): Option[Char] = pairs.collectFirst { case (opener, `c`) => opener }
 
   def doLine(line: String): ParseResult =
@@ -18,9 +18,9 @@ package adventofcode.y2021
     (line.toSeq -> List[Char]()).unfold { // (Left = again, Right = stop)
       case (c +: t, stack) if isOpener(c) => // push new opening char to stack
         Left((t, c :: stack))
-      case ((c@closer(opener)) +: t, top :: stack) if top == opener => // closing char matching top of stack: pop
+      case ((c@Closer(opener)) +: t, top :: stack) if top == opener => // closing char matching top of stack: pop
         Left((t, stack))
-      case foo@((c@closer(_)) +: _, _) => // otherwise closing char is Wrong
+      case foo@((c@Closer(_)) +: _, _) => // otherwise closing char is Wrong
         Right(ParseResult.Wrong(c))
       case (Seq(), List()) => // input and stack empty: done!
         Right(ParseResult.Ok)
