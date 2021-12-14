@@ -31,10 +31,11 @@ package adventofcode.y2021
   val insertions2: Map[String, Seq[String]] = insertions.map { case (k, v) =>
     (k, Seq(s"${k(0)}$v", s"$v${k(1)}"))
   }.withDefaultValue(Seq())
-
-  lazy val histoStream: LazyList[Histo] = start2 #:: histoStream.map { histo =>
+  
+  def step2(histo: Histo): Histo =
     histo.toSeq.flatMap { case (key, amount) => insertions2(key).map(_ -> amount) }.groupMapReduce(_._1)(_._2)(_ + _)
-  }
+
+  val histoStream: LazyList[Histo] = LazyList.iterate(start2)(step2)
 
   def result(after: Int): Long =
     val histo = (histoStream(after).toSeq :+ (start.last.toString, 1L)).groupMapReduce(_._1.head)(_._2)(_ + _).values.toSeq
