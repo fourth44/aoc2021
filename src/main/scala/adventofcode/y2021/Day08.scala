@@ -36,7 +36,7 @@ enum Digits(val pos: Set[Pos], val num: Int):
   }
   println(resultA)
 
-  val resultB = parsed.map { case (signals, outputs) =>
+  val resultB = parsed.map { (signals, outputs) =>
     val allSignals = (signals ++ outputs).distinct.ensuring(_.sizeIs == 10) // all digits must be on all lines for this to work.
     val signalsBySize = allSignals.groupBy(_.size)
 

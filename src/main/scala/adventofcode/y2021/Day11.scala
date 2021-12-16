@@ -34,13 +34,13 @@ package adventofcode.y2021
 
   def print(grid: IntGrid) = grid.map(_.mkString).mkString("\n")
 
-  val timetable = LazyList.iterate(ints2store(grid0) -> 0) { case (gr1, acc) =>
+  val timetable = LazyList.iterate(ints2store(grid0) -> 0) { (gr1, acc) =>
     val gr2 = gr1.map(_ + 1)
     val gr5 = (gr2.map(_ -> false)).unfold { gr3 =>
       val gr4 = snapshot(gr3.extend(withSurroundings)).map {
         case ((i, _), surr) => (i + surr.count { case (j, didFire2) => !didFire2 && j >= 10 }, i >= 10)
       }
-      val isDone = execute(gr4).count { case (i, didFire) => !didFire && i >= 10 } == 0
+      val isDone = execute(gr4).count { (i, didFire) => !didFire && i >= 10 } == 0
       Either.cond(isDone, gr4, gr4)
     }
     val flashes = execute(gr5).count(_._2)

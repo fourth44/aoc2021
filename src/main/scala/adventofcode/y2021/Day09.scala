@@ -11,7 +11,7 @@ given Functor[Seq] with
 // comonadic store
 case class Store[S,A](peek: S => A, cursor: S):
   def extract: A = peek(cursor)
-  def extend[B](f: Store[S,A] => B): Store[S, B] = Store(s => f(Store(peek, s)), cursor)
+  def extend[B](f: Store[S,A] => B): Store[S, B] = Store(s => f(Store(peek, s)), cursor) // coFlatMap
   def map[B](f: A => B): Store[S,B] = extend(s => f(s.extract))
   def zip[B](other: Store[S, B]): Store[S, (A, B)] = Store(s => (peek(s), other.peek(s)), cursor)
   def experiment[F[_]: Functor](fn: S => F[S]): F[A] = fn(cursor).fmap(peek)
@@ -44,7 +44,7 @@ type Grid[A] = Store[Vect2D[Int], A]
     depthStore.extend(withSurroundings)
 
   val lowPointsStore: Store[Vect2D[Int], Option[Int]] =
-    depthSurroundingsStore.map { case (depth, surr) => Option.when(surr.forall(_ > depth))(depth) }
+    depthSurroundingsStore.map { (depth, surr) => Option.when(surr.forall(_ > depth))(depth) }
 
   val (lowPoints, lowPointsPositions) = allPoints.flatMap(p => lowPointsStore.peek(p).map(_ -> p)).unzip
 

@@ -9,7 +9,7 @@ def Day03 = withResource("day03a.txt") {
 
   val transposed = lines().transpose
 
-  val histogramByCol: Seq[Map[Int, Char]] = transposed.map(_.groupBy(identity).map { case (k, v) => (v.size, k) })
+  val histogramByCol: Seq[Map[Int, Char]] = transposed.map(_.groupBy(identity).map { (k, v) => (v.size, k) })
 
   val gamma = histogramByCol.map(_.maxBy(_._1)._2).mkString
   val epsilon = histogramByCol.map(_.minBy(_._1)._2).mkString
@@ -19,8 +19,8 @@ def Day03 = withResource("day03a.txt") {
 
   // 2nd part
 
-  def compute(f: Seq[Seq[String]] => Seq[String]) = (0 until lines().head.length).foldLeft(lines()) { case (candidates, column) =>
-    candidates.groupBy(_(column)).toSeq.sortBy { case (c, l) => (l.length, c) }.map(_._2).pipe(f)
+  def compute(f: Seq[Seq[String]] => Seq[String]) = (0 until lines().head.length).foldLeft(lines()) { (candidates, column) =>
+    candidates.groupBy(_(column)).toSeq.sortBy { (c, l) => (l.length, c) }.map(_._2).pipe(f)
   }
 
   val Seq(oxygen) = compute(_.last)

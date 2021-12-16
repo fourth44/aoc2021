@@ -11,7 +11,7 @@ package adventofcode.y2021
 
   def isOpener(c: Char) = pairs.map(_._1).contains(c)
   object Closer:
-    def unapply(c: Char): Option[Char] = pairs.collectFirst { case (opener, `c`) => opener }
+    def unapply(c: Char): Option[Char] = pairs.collectFirst { (opener, `c`) => opener }
 
   def doLine(line: String): ParseResult =
     // starting from the input string and and empty stack, repeatedly:
