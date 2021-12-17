@@ -85,5 +85,3 @@ def eof: Parser[String] = loc => regex("\\z".r)(loc) match
     val leftOver = loc.input.substring(loc.offset)
     Result.Failure(s"Expected E.O.F. but found $leftOver")
   case s => s
-
-
