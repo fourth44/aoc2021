@@ -11,7 +11,7 @@ given Functor[Seq] with
 // comonadic store
 case class Store[S,A](peek: S => A, cursor: S):
   def extract: A = peek(cursor)
-  def extend[B](f: Store[S,A] => B): Store[S, B] = Store(s => f(Store(peek, s)), cursor) // coFlatMap
+  def extend[B](f: Store[S,A] => B): Store[S, B] = Store(Memo(s => f(Store(peek, s))), cursor) // coFlatMap
   def map[B](f: A => B): Store[S,B] = extend(s => f(s.extract))
   def zip[B](other: Store[S, B]): Store[S, (A, B)] = Store(s => (peek(s), other.peek(s)), cursor)
   def experiment[F[_]: Functor](fn: S => F[S]): F[A] = fn(cursor).fmap(peek)

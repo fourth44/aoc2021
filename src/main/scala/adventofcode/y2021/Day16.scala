@@ -1,8 +1,11 @@
 package adventofcode.y2021
 
+import Parser.*
+
 @main def Day16: Unit = withResource("day16a.txt") {
 
   // Model
+
   case class Packet(header: Header, payload: Payload)
 
   enum Payload:
@@ -12,7 +15,7 @@ package adventofcode.y2021
   case class Header(version: Int, tid: TypeId)
 
   enum TypeId:
-    case sum, product, min, max, lit, gt, lt, eqq
+    case sum, product, min, max, lit, gt, lt, eqq // 'eq' confuses the compiler
 
   // Parsers
 
@@ -28,9 +31,9 @@ package adventofcode.y2021
     }
     group.map(BigInt(_, 2))
 
-  val header: Parser[Header] = (intN(3) ** typeId).map(Header.apply(_, _))
+  val header: Parser[Header] = (intN(3) ** typeId).map(Header.apply)
 
-  lazy val parsePacket: Parser[Packet] = header.flatMap { (header: Header) =>
+  lazy val parsePacket: Parser[Packet] = header.flatMap { header =>
     header.tid match
       case TypeId.lit => literal.map(l => Packet(header, Payload.Literal(l)))
       case other =>

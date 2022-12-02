@@ -4,7 +4,7 @@ import scala.annotation.tailrec
 import scala.util.matching.Regex
 
 // helper for pattern matching on regexes without predefining the regex first
-implicit class RegexContext(sc: StringContext):
+extension (sc: StringContext)
   def r = new Regex(sc.parts.mkString, sc.parts.tail.map(_ => "x"): _*)
 
 object AsInt:
@@ -18,19 +18,6 @@ extension [S](s: S)
       case Left(s2) => s2.unfold(f)
       case Right(a) => a
 
-// helpers to reduce file reading boilerplate (which already hardly existed anyway...)
-
-opaque type Source = () => scala.io.Source
-
-def withResource[A](fileName: String)(thunk: Source ?=> A): A = {
-  val mkSrc = () => Option(getClass.getResourceAsStream(s"/adventofcode/y2021/${fileName}")).map { is =>
-    scala.io.Source.fromInputStream(is)
-  }.getOrElse(sys.error("Resource not found"))
-  thunk(using mkSrc)
-}
-
-def lines()(using src: Source): Seq[String] = src().getLines().toSeq
-
-def intsFirstLine(): Source ?=> Seq[Int] = lines().head.split(',').toSeq.map(_.toInt)
-def intLines(): Source ?=> Seq[Int] = lines().filterNot(_.isBlank).map(_.toInt)
+extension [K,V1](map: Map[K, V1]) def intersect[V2](map2: Map[K, V2]): Map[K, (V1, V2)] =
+  map.keySet.intersect(map2.keySet).map(k => k -> (map(k), map2(k))).toMap
 

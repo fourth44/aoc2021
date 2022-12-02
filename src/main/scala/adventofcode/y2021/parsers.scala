@@ -1,6 +1,7 @@
 package adventofcode.y2021
 
 import scala.util.matching.Regex
+import Parser.succeed
 
 type Parser[+A] = Location => Result[A]
 
@@ -13,8 +14,6 @@ enum Result[+A]:
   def advanceSuccess(n: Int): Result[A] = this match
     case Success(a, m) => Success(a, n + m)
     case _ => this
-
-def succeed[A](a: A): Parser[A] = _ => Result.Success(a, 0)
 
 extension[A](p: Parser[A]) {
   def run(input: String): Either[String, A] =
@@ -36,6 +35,9 @@ extension[A](p: Parser[A]) {
 
   def **[B](p2: => Parser[B]): Parser[(A, B)] =
     p.flatMap(a => p2.map(b => (a, b)))
+    
+  def <*[B](p2: => Parser[B]): Parser[A] = (p ** p2).map(_._1)
+  def *>[B](p2: => Parser[B]): Parser[B] = (p ** p2).map(_._2)
 
   def |(p2: => Parser[A]): Parser[A] = loc => p(loc) match
     case Result.Failure(_) => p2(loc)
@@ -58,30 +60,37 @@ extension[A](p: Parser[A]) {
     p.map(Some(_)) | succeed(None)
 }
 
+object Parser {
 
-def string(s: String): Parser[String] = loc => {
-  val toProcess = loc.input.substring(loc.offset)
-  if (toProcess.startsWith(s)) Result.Success(s, s.length)
-  else Result.Failure(s"Input at ${loc.offset} does not start with $s")
+  def succeed[A](a: A): Parser[A] = _ => Result.Success(a, 0)
+
+  def string(s: String): Parser[String] = loc => {
+    val toProcess = loc.input.substring(loc.offset)
+    if (toProcess.startsWith(s)) Result.Success(s, s.length)
+    else Result.Failure(s"Input at ${loc.offset} does not start with $s")
+  }
+
+  def char(c: Char): Parser[Char] = string(c.toString).map(_.charAt(0))
+
+  // above the subset used by Day16
+  
+  def regex(r: Regex): Parser[String] = loc => {
+    val toProcess = loc.input.substring(loc.offset)
+    r.findPrefixOf(toProcess) match
+      case None =>
+        def toProcess = loc.input.substring(loc.offset)
+
+        Result.Failure(s"$toProcess does not match regex $r")
+      case Some(m) => Result.Success(m, m.length)
+  }
+
+  val num = regex("-?\\d+".r).map(_.toInt)
+
+  def whitespace: Parser[String] = regex("\\s*".r)
+
+  def eof: Parser[String] = loc => regex("\\z".r)(loc) match
+    case Result.Failure(_) =>
+      val leftOver = loc.input.substring(loc.offset)
+      Result.Failure(s"Expected E.O.F. but found $leftOver")
+    case s => s
 }
-
-def char(c: Char): Parser[Char] = string(c.toString).map(_.charAt(0))
-
-// above the subset used by Day16
-
-def regex(r: Regex): Parser[String] = loc => {
-  val toProcess = loc.input.substring(loc.offset)
-  r.findPrefixOf(toProcess) match 
-    case None =>
-      def toProcess = loc.input.substring(loc.offset)
-      Result.Failure(s"$toProcess does not match regex $r")
-    case Some(m) => Result.Success(m, m.length)
-}
-
-def whitespace: Parser[String] = regex("\\s*".r)
-
-def eof: Parser[String] = loc => regex("\\z".r)(loc) match 
-  case Result.Failure(_) =>
-    val leftOver = loc.input.substring(loc.offset)
-    Result.Failure(s"Expected E.O.F. but found $leftOver")
-  case s => s
