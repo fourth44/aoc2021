@@ -8,11 +8,14 @@ def Day02 = withResource("day02a.txt") {
     case Paper extends RPS(2)
     case Scissors extends RPS(3)
 
-
+  // TODO should split up in loose/dwaw/win and compute score seperately
   def outcome(other: RPS, you: RPS): Int = math.floorMod(you.score - other.score, 3) match
-    case 0 => 3 + you.score
-    case 1 => 6 + you.score
-    case 2 => 0 + you.score
+    case 0 => // zero distance: draw
+      3 + you.score
+    case i if i % 2 == 1 => // uneven distance: win
+      6 + you.score
+    case _ => // even distance: loose
+      0 + you.score
 
   def parse1(s: String): RPS = s match
     case "A" | "X" => RPS.Rock
@@ -23,7 +26,7 @@ def Day02 = withResource("day02a.txt") {
     .map { case r"(\w)${one} (\w)${two}" => parse1(one) -> parse1(two) }
 
   // Part 1:
-  println(strategies1.map(outcome.tupled).sum)
+  println(strategies1.map(outcome.tupled).sum) // 13052
 
   enum Result:
     case Loose, Draw, Win
@@ -37,5 +40,5 @@ def Day02 = withResource("day02a.txt") {
     .map { case r"(\w)${one} (\w)${two}" => parse1(one) -> parse2(two) }
 
   // Part 2:
-  println(strategies2.map((rps, result) => outcome(rps, pick(rps, result))).sum)
+  println(strategies2.map((rps, result) => outcome(rps, pick(rps, result))).sum) // 13693
 }
