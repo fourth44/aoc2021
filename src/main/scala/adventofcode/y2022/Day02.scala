@@ -7,9 +7,11 @@ def Day02 = withResource("day02a.txt") {
     case Rock extends RPS(1)
     case Paper extends RPS(2)
     case Scissors extends RPS(3)
+    case Spock extends RPS(4)
+    case Lizard extends RPS(5)
 
   // TODO should split up in loose/dwaw/win and compute score seperately
-  def outcome(other: RPS, you: RPS): Int = math.floorMod(you.score - other.score, 3) match
+  def outcome(other: RPS, you: RPS): Int = math.floorMod(you.score - other.score, 5) match
     case 0 => // zero distance: draw
       3 + you.score
     case i if i % 2 == 1 => // uneven distance: win
@@ -21,6 +23,8 @@ def Day02 = withResource("day02a.txt") {
     case "A" | "X" => RPS.Rock
     case "B" | "Y" => RPS.Paper
     case "C" | "Z" => RPS.Scissors
+    case "D" => RPS.Spock
+    case "E" => RPS.Lizard
 
   val strategies1 = lines()
     .map { case r"(\w)${one} (\w)${two}" => parse1(one) -> parse1(two) }
@@ -41,4 +45,9 @@ def Day02 = withResource("day02a.txt") {
 
   // Part 2:
   println(strategies2.map((rps, result) => outcome(rps, pick(rps, result))).sum) // 13693
+
+  // results for part 1 and 2 still work after adding lizard and spock
+
+  println(outcome(other = RPS.Rock, you = RPS.Spock)) // spock vaporizes rock, you win: 6+4=10
+
 }
