@@ -51,7 +51,7 @@ extension [N](s: Segment[N])(using n: Numeric[N]) {
     }
 
   def overlap(s2: Segment[N]): Option[Segment[N]] =
-    Option.when(s.det(s2) == zero) {                                 // if parallel
+    Option.when(s.det(s2) == zero) {                              // if parallel
       (s.toSeq ++ s2.toSeq)                                       // from all the points of both lines
         .filter { v => Seq(s, s2).forall(_.onLineSegment(v)) }    // keep those which are on both lines
         .distinct

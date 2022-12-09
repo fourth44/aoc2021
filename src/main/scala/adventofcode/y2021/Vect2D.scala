@@ -9,3 +9,4 @@ case class Vect2D[A: Numeric](x: A, y: A):
   def * (i: A): Vect2D[A] = Vect2D(x * i, y * i)
   def swap: Vect2D[A] = Vect2D(y, x)
   def seq: Seq[A] = Seq(x, y)
+  def map[B: Numeric](f: A => B): Vect2D[B] = Vect2D(f(x), f(y))
