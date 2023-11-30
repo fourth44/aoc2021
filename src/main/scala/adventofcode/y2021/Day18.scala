@@ -3,6 +3,8 @@ package adventofcode.y2021
 import Parser.*
 import scala.annotation.tailrec
 
+
+
 @main def Day18: Unit = withResource("day18a.txt"){
 
   enum SnailFishNumber {
@@ -28,10 +30,7 @@ import scala.annotation.tailrec
   type Path = (Seq[Dir], Int)
   type Paths = Seq[Path]
 
-  // parsers
-  def bracketed[A](p: Parser[A]) = (string("[") ** p ** string("]")).map { case ((_, a), _) => a }
-  val num = regex("/d".r).map(_.toInt)
-
+  // parser
   lazy val snailFishNumber: Parser[SnailFishNumber] =
     regex("[0-9]".r).map(n => SnailFishNumber.Num(n.toInt)) | bracketed((snailFishNumber ** string(",") ** snailFishNumber).map {
       case ((one, _), two) => SnailFishNumber.Pair(one, two)

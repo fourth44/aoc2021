@@ -13,9 +13,9 @@ object AsInt:
 extension [S](s: S)
   // repeatedly iterate over an initial state until it emits a desired value
   @tailrec
-  def unfold[A](f: S => Either[S, A]): A =
+  def iterate[A](f: S => Either[S, A]): A =
     f(s) match
-      case Left(s2) => s2.unfold(f)
+      case Left(s2) => s2.iterate(f)
       case Right(a) => a
 
 extension [K,V1](map: Map[K, V1]) def intersect[V2](map2: Map[K, V2]): Map[K, (V1, V2)] =

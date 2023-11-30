@@ -5,14 +5,15 @@ import adventofcode.y2021.Vect2D
 type Vect = Vect2D[Int]
 val Vect = Vect2D
 
+enum Dir(val vec: Vect):
+  case R extends Dir(Vect(1, 0))
+  case D extends Dir(Vect(0, 1))
+  case L extends Dir(Vect(-1, 0))
+  case U extends Dir(Vect(0, -1))
+
 @main
 def Day09 = withResource("day09a.txt") {
 
-  enum Dir(val vec: Vect):
-    case L extends Dir(Vect(-1, 0))
-    case R extends Dir(Vect(1, 0))
-    case U extends Dir(Vect(0, -1))
-    case D extends Dir(Vect(0, 1))
 
   val parsed: Seq[(Dir, Int)] =
     lines().map { case s"${dir} ${AsInt(dist)}" => Dir.valueOf(dir) -> dist }
@@ -24,8 +25,7 @@ def Day09 = withResource("day09a.txt") {
 
   def follow(head: Vect, tail: Vect): Vect = // given an already moved rope piece and it's yet unmoved next rope piece, where will the next rope piece move?
     val diff = head + tail * -1
-    val unit = diff.map(_.sign)
-    val move = if (diff.seq.exists(_.abs >= 2)) unit else Vect(0, 0)
+    val move = if (diff.seq.exists(_.abs >= 2)) diff.unit else Vect(0, 0)
     tail + move
 
   def followPath(head: Seq[Vect]): Seq[Vect] = // given the movement path of one piece of rope, how will the next rope piece move along?
